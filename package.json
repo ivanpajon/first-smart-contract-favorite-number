@@ -1,0 +1,11 @@
+{
+  "name": "favorite-number",
+  "version": "0.1.0",
+  "description": "Hardhat project with a simple Smart Contract to store your favorite number",
+  "author": "Ivan Gabriel Pajon Rodriguez",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "hardhat": "^2.12.6"
+  }
+}
