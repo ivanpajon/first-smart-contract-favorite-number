@@ -15,11 +15,11 @@ const config: HardhatUserConfig = {
       chainId: 31337,
     },
   },
-  // Nodo opcional que permite agregar el plugin hardhat-deploy
+  // Optional node for hardhat-deploy plugin
   namedAccounts: {
     // Alias
     deployer: {
-      default: 0, // Por defecto asigna la primera cuenta
+      default: 0, // First account by default
     },
   },
 };

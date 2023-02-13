@@ -24,7 +24,7 @@ if (!['hardhat', 'localhost'].includes(network.name)) {
 
     it('Initial favorite number by default', async () => {
       // Gets default favorite number
-      const favoriteNumber = (await favoriteNumberContract.getPrivateNumber()).toString();
+      const favoriteNumber = (await favoriteNumberContract.getFavoriteNumber()).toString();
 
       assert.equal(favoriteNumber, '0');
     });
@@ -34,10 +34,10 @@ if (!['hardhat', 'localhost'].includes(network.name)) {
       const newFavoriteNumber = '10';
 
       // Updates favorite number
-      await favoriteNumberContract.setPrivateNumber(newFavoriteNumber);
+      await favoriteNumberContract.setFavoriteNumber(newFavoriteNumber);
 
       // Gets updated favorite number
-      const updatedFavoriteNumber = (await favoriteNumberContract.getPrivateNumber()).toString();
+      const updatedFavoriteNumber = (await favoriteNumberContract.getFavoriteNumber()).toString();
 
       assert.equal(newFavoriteNumber, updatedFavoriteNumber);
     });

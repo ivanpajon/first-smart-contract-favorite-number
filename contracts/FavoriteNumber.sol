@@ -6,11 +6,11 @@ contract FavoriteNumber {
 
     constructor() { }
 
-    function setPrivateNumber(uint favoriteNumber) external {
+    function setFavoriteNumber(uint favoriteNumber) external {
         s_favoriteNumber = favoriteNumber;
     }
 
-    function getPrivateNumber() public view returns (uint) {
+    function getFavoriteNumber() public view returns (uint) {
         return s_favoriteNumber;
     }
 }
