@@ -5,15 +5,15 @@ const deployFn: DeployFunction = async ({
   getNamedAccounts,
   deployments
 }: HardhatRuntimeEnvironment) => {
-  // Get deploy and log functions
+  // Gets deploy and log functions
   const { deploy, log } = deployments;
-  // Get addres of the deployer alias
+  // Gets account of the deployer alias
   const { deployer } = await getNamedAccounts();
 
   // Changes log color to yellow
   log('\x1b[33m%s\x1b[0m', '---------------------------------------------------------------');
 
-  // Deploy FavoriteNumber contract
+  // Deploys FavoriteNumber contract
   const favoriteNumber = await deploy('FavoriteNumber', {
     from: deployer,
     args: [],
