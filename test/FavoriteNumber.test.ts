@@ -1,7 +1,7 @@
+import { assert, expect } from 'chai';
 import { deployments, ethers, getNamedAccounts, network } from 'hardhat';
 
 import { FavoriteNumber } from '../typechain-types';
-import { assert } from 'chai';
 
 // Only execute tests in local environment
 if (!['hardhat', 'localhost'].includes(network.name)) {
@@ -40,6 +40,16 @@ if (!['hardhat', 'localhost'].includes(network.name)) {
       const updatedFavoriteNumber = (await favoriteNumberContract.getFavoriteNumber()).toString();
 
       assert.equal(newFavoriteNumber, updatedFavoriteNumber);
+    });
+
+    it('Can not set invalid favorite number', async () => {
+      // Invalid favorite number
+      let invalidFavoriteNumber = '101';
+
+      // Tries to update favorite number
+      let transaction = favoriteNumberContract.setFavoriteNumber(invalidFavoriteNumber);
+
+      await expect(transaction).to.be.revertedWithCustomError(favoriteNumberContract, 'FavoriteNumber__NumberMustBeLower');
     });
   });
 }

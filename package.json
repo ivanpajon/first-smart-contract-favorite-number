@@ -1,6 +1,6 @@
 {
   "name": "favorite-number",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Hardhat project with a simple Smart Contract to store your favorite number",
   "author": "Ivan Gabriel Pajon Rodriguez",
   "license": "MIT",
