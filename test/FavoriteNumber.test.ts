@@ -44,10 +44,10 @@ if (!['hardhat', 'localhost'].includes(network.name)) {
 
     it('Can not set invalid favorite number', async () => {
       // Invalid favorite number
-      let invalidFavoriteNumber = '101';
+      const invalidFavoriteNumber = '101';
 
       // Tries to update favorite number
-      let transaction = favoriteNumberContract.setFavoriteNumber(invalidFavoriteNumber);
+      const transaction = favoriteNumberContract.setFavoriteNumber(invalidFavoriteNumber);
 
       await expect(transaction).to.be.revertedWithCustomError(favoriteNumberContract, 'FavoriteNumber__NumberMustBeLower');
     });
