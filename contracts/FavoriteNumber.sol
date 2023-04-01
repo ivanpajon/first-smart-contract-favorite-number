@@ -4,7 +4,12 @@ pragma solidity 0.8.18;
 error FavoriteNumber__NumberMustBeLower(uint favoriteNumber);
 
 contract FavoriteNumber {
-    uint private s_favoriteNumber;
+    struct FavoriteNumberData {
+        uint favoriteNumber;
+        uint lastUpdate;
+    }
+
+    mapping(address => FavoriteNumberData) private s_addressToFavoriteNumberData;
 
     constructor() { }
 
@@ -13,10 +18,17 @@ contract FavoriteNumber {
             revert FavoriteNumber__NumberMustBeLower(favoriteNumber);
         }
 
-        s_favoriteNumber = favoriteNumber;
+        s_addressToFavoriteNumberData[msg.sender] = FavoriteNumberData({
+            favoriteNumber: favoriteNumber,
+            lastUpdate: block.timestamp
+        });
     }
 
-    function getFavoriteNumber() public view returns (uint) {
-        return s_favoriteNumber;
+    function getFavoriteNumber(address favoriteNumberAddress) public view returns (uint) {
+        return s_addressToFavoriteNumberData[favoriteNumberAddress].favoriteNumber;
+    }
+
+    function getFavoriteNumberLastUpdate(address favoriteNumberAddress) public view returns (uint) {
+        return s_addressToFavoriteNumberData[favoriteNumberAddress].lastUpdate;
     }
 }
