@@ -1,8 +1,8 @@
 import { assert, expect } from 'chai';
 import { deployments, ethers, getNamedAccounts, network } from 'hardhat';
 
-import { FavoriteNumber } from '../typechain-types';
 import { mine } from '@nomicfoundation/hardhat-network-helpers';
+import { FavoriteNumber } from '../typechain-types';
 
 // Only execute tests in local environment
 if (!['hardhat', 'localhost'].includes(network.name)) {
@@ -11,7 +11,7 @@ if (!['hardhat', 'localhost'].includes(network.name)) {
   describe('FavoriteNumber Unit Tests', () => {
     let favoriteNumberContract: FavoriteNumber;  // FavoriteNumber contract
     let deployer: string;  // Account from alias 'deployer'
-    const deployerFavoriteNumber = '10';  // Deployer favorite number
+    const deployerFavoriteNumbers: [number, number] = [10, 20];  // Deployer favorite numbers
 
     beforeEach(async () => {
       // Gets deployer account
@@ -24,33 +24,33 @@ if (!['hardhat', 'localhost'].includes(network.name)) {
       favoriteNumberContract = await ethers.getContract('FavoriteNumber');
     });
 
-    it('Initial favorite number by default', async () => {
-      // Gets default favorite number
-      const favoriteNumber = (await favoriteNumberContract.getFavoriteNumber(deployer)).toString();
+    it('Initial favorite numbers by default', async () => {
+      // Gets default favorite numbers
+      const favoriteNumbers = (await favoriteNumberContract.getFavoriteNumbers(deployer)).toString();
 
-      assert.equal(favoriteNumber, '0');
+      assert.equal(favoriteNumbers, '0,0');
     });
 
-    it('Initial favorite number last update by default', async () => {
-      // Gets default favorite number last update
-      const favoriteNumberLastUpdate = (await favoriteNumberContract.getFavoriteNumberLastUpdate(deployer)).toString();
+    it('Initial favorite numbers last update by default', async () => {
+      // Gets default favorite numbers last update
+      const favoriteNumberLastUpdate = (await favoriteNumberContract.getFavoriteNumbersLastUpdate(deployer)).toString();
 
       assert.equal(favoriteNumberLastUpdate, '0');
     });
 
-    it('Set and get favorite number', async () => {
-      // Updates favorite number
-      await favoriteNumberContract.setFavoriteNumber(deployerFavoriteNumber);
+    it('Set and get favorite numbers', async () => {
+      // Updates favorite numbers
+      await favoriteNumberContract.setFavoriteNumbers(deployerFavoriteNumbers);
 
-      // Gets updated favorite number
-      const updatedFavoriteNumber = (await favoriteNumberContract.getFavoriteNumber(deployer)).toString();
+      // Gets updated favorite numbers
+      const updatedFavoriteNumbers = (await favoriteNumberContract.getFavoriteNumbers(deployer)).toString();
 
-      assert.equal(deployerFavoriteNumber, updatedFavoriteNumber);
+      assert.equal(deployerFavoriteNumbers.join(','), updatedFavoriteNumbers);
     });
 
-    it('Set favorite number and get its last update', async () => {
-      // Updates favorite number
-      const txReceipt = await favoriteNumberContract.setFavoriteNumber(deployerFavoriteNumber);
+    it('Set favorite numbers and get its last update', async () => {
+      // Updates favorite numbers
+      const txReceipt = await favoriteNumberContract.setFavoriteNumbers(deployerFavoriteNumbers);
 
       // Gets transaction block timestamp
       const txBlockTimestamp = (await ethers.provider.getBlock(txReceipt.blockNumber!)).timestamp;
@@ -59,51 +59,59 @@ if (!['hardhat', 'localhost'].includes(network.name)) {
       const blocksToMine = 5;
       await mine(blocksToMine);
 
-      // Gets favorite number last update
-      const favoriteNumberLastUpdate = (await favoriteNumberContract.getFavoriteNumberLastUpdate(deployer)).toString();
-      assert.equal(`${txBlockTimestamp}`, favoriteNumberLastUpdate);
+      // Gets favorite numbers last update
+      const favoriteNumbersLastUpdate = (await favoriteNumberContract.getFavoriteNumbersLastUpdate(deployer)).toString();
+      assert.equal(`${txBlockTimestamp}`, favoriteNumbersLastUpdate);
 
       // Gets timestamp from new last block
       const latestBlockTimestamp = (await ethers.provider.getBlock('latest')).timestamp;
       assert.equal(`${txBlockTimestamp + blocksToMine}`, `${latestBlockTimestamp}`);
     });
 
-    it('Set and get favorite number for multiple users', async () => {
-      // Deployer updates favorite number
-      await favoriteNumberContract.setFavoriteNumber(deployerFavoriteNumber);
+    it('Set and get favorite numbers for multiple users', async () => {
+      // Deployer updates favorite numbers
+      await favoriteNumberContract.setFavoriteNumbers(deployerFavoriteNumbers);
 
-      // User updates favorite number
+      // User updates favorite numbers
       const user = (await ethers.getSigners())[1];
-      const userFavoriteNumber = '50';
-      favoriteNumberContract.connect(user).setFavoriteNumber(userFavoriteNumber);
+      const userFavoriteNumbers: [number, number] = [50, 70];
+      favoriteNumberContract.connect(user).setFavoriteNumbers(userFavoriteNumbers);
 
-      // Tester updates favorite number
+      // Tester updates favorite numbers
       const tester = (await ethers.getSigners())[2];
-      const testerFavoriteNumber = '98';
-      favoriteNumberContract.connect(tester).setFavoriteNumber(testerFavoriteNumber);
+      const testerFavoriteNumbers: [number, number] = [89, 98];
+      favoriteNumberContract.connect(tester).setFavoriteNumbers(testerFavoriteNumbers);
 
-      // Gets deployer updated favorite number
-      const deployerUpdatedFavoriteNumber = (await favoriteNumberContract.getFavoriteNumber(deployer)).toString();
+      // Gets deployer updated favorite numbers
+      const deployerUpdatedFavoriteNumbers = (await favoriteNumberContract.getFavoriteNumbers(deployer)).toString();
 
-      // Gets user updated favorite number
-      const userUpdatedFavoriteNumber = (await favoriteNumberContract.getFavoriteNumber(user.address)).toString();
+      // Gets user updated favorite numbers
+      const userUpdatedFavoriteNumbers = (await favoriteNumberContract.getFavoriteNumbers(user.address)).toString();
 
-      // Gets tester updated favorite number
-      const testerUpdatedFavoriteNumber = (await favoriteNumberContract.getFavoriteNumber(tester.address)).toString();
+      // Gets tester updated favorite numbers
+      const testerUpdatedFavoriteNumbers = (await favoriteNumberContract.getFavoriteNumbers(tester.address)).toString();
 
-      assert.equal(deployerFavoriteNumber, deployerUpdatedFavoriteNumber);
-      assert.equal(userFavoriteNumber, userUpdatedFavoriteNumber);
-      assert.equal(testerFavoriteNumber, testerUpdatedFavoriteNumber);
+      assert.equal(deployerFavoriteNumbers.join(','), deployerUpdatedFavoriteNumbers);
+      assert.equal(userFavoriteNumbers.join(','), userUpdatedFavoriteNumbers);
+      assert.equal(testerFavoriteNumbers.join(','), testerUpdatedFavoriteNumbers);
     });
 
-    it('Cannot set invalid favorite number', async () => {
-      // Invalid favorite number
-      const invalidFavoriteNumber = '101';
+    it('Cannot set invalid favorite numbers', async () => {
+      // Invalid first favorite number
+      const invalidFirstFavoriteNumbers: [number, number] = [101, 99];
 
-      // Tries to update favorite number
-      const txReceipt = favoriteNumberContract.setFavoriteNumber(invalidFavoriteNumber);
+      // Tries to update favorite numbers
+      const txFirstReceipt = favoriteNumberContract.setFavoriteNumbers(invalidFirstFavoriteNumbers);
 
-      await expect(txReceipt).to.be.revertedWithCustomError(favoriteNumberContract, 'FavoriteNumber__NumberMustBeLower');
+      await expect(txFirstReceipt).to.be.revertedWithCustomError(favoriteNumberContract, 'FavoriteNumber__NumberMustBeLower');
+      
+      // Invalid second favorite number
+      const invalidSecondFavoriteNumbers: [number, number] = [99, 101];
+
+      // Tries to update favorite numbers
+      const txSecondReceipt = favoriteNumberContract.setFavoriteNumbers(invalidSecondFavoriteNumbers);
+
+      await expect(txSecondReceipt).to.be.revertedWithCustomError(favoriteNumberContract, 'FavoriteNumber__NumberMustBeLower');
     });
   });
 }
